@@ -75,7 +75,10 @@ class Serializer(base.Serializer):
         Called to handle a ForeignKey field.
         Recursively serializes relations specified in the 'relations' option.
         """
-        fname = field.name
+        if hasattr(field, "_priv_name"):
+            fname = field._priv_name
+        else:
+            fname = field.name
         related = getattr(obj, fname)
         if related is not None:
             if fname in self.relations:

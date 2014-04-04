@@ -62,6 +62,15 @@ class Serializer(base.Serializer):
                     if field.attname not in self.excludes:
                         if not self.fields or field.attname in self.fields:
                             self.handle_m2m_field(obj, field)
+            for fname in self.relations:
+                print "Fname from relations: ", fname
+                try:
+                    field = getattr(obj, fname)
+                except:
+                    continue
+                field._priv_name = fname
+                self.handle_fk_field(obj, field)
+
             for extra in self.extras:
                 self.handle_extra_field(obj, extra)
             self.end_object(obj)
