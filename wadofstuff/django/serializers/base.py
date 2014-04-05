@@ -70,6 +70,8 @@ class Serializer(base.Serializer):
                 field._priv_name = fname
                 if (field.__module__ + '.' + field.__class__.__name__
                     == "django.db.models.fields.related.RelatedManager"):
+                    if len(field.get_query_set()) == 0:
+                        continue
                     self.handle_m2m_field(obj, field)
                 else:
                     self.handle_fk_field(obj, field)
