@@ -21,6 +21,7 @@ class Serializer(base.Serializer):
         self.relations = None
         self.extras = None
         self.use_natural_keys = None
+        self.use_choices = None
         super(Serializer, self).__init__(*args, **kwargs)
 
     def serialize(self, queryset, **options):
@@ -29,6 +30,7 @@ class Serializer(base.Serializer):
                 fields are serialized.
             excludes - list of fields to be excluded. Overrides ``fields``.
             relations - list of related fields to be fully serialized.
+            choices - use choices instead of the value associated
             extras - list of attributes and methods to include.
                 Methods cannot take arguments.
         """
@@ -38,6 +40,7 @@ class Serializer(base.Serializer):
         self.excludes = options.pop("excludes", [])
         self.relations = options.pop("relations", [])
         self.extras = options.pop("extras", [])
+        self.use_choices = options.pop("choices", False)
         self.use_natural_keys = options.pop("use_natural_keys", False)
 
         already_processed = []

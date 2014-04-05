@@ -65,6 +65,14 @@ class Serializer(base.Serializer):
         # Protected types (i.e., primitives like None, numbers, dates,
         # and Decimals) are passed through as is. All other values are
         # converted to string first.
+        if hasattr(field, 'choices') and self.use_choices:
+            try:
+                choice = dict(field.choices)
+                self._fields[field.name] = choice[value]
+                return
+            except:
+                pass
+
         if is_protected_type(value):
             self._fields[field.name] = value
         else:
