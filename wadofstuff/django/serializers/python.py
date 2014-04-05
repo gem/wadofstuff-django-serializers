@@ -75,10 +75,8 @@ class Serializer(base.Serializer):
         Called to handle a ForeignKey field.
         Recursively serializes relations specified in the 'relations' option.
         """
-        if hasattr(field, "_priv_name"):
-            fname = field._priv_name
-        else:
-            fname = field.name
+        fname = (field._priv_name if hasattr(field, "_priv_name")
+                 else field.name)
         related = getattr(obj, fname)
         if related is not None:
             if fname in self.relations:
@@ -111,8 +109,9 @@ class Serializer(base.Serializer):
         Called to handle a ManyToManyField.
         Recursively serializes relations specified in the 'relations' option.
         """
-        if field.rel.through._meta.auto_created:
-            fname = field.name
+        if hasattr(field, "_priv_name") or field.rel.through._meta.auto_created:
+            fname = (field._priv_name if hasattr(field, "_priv_name")
+                     else field.name)
             if fname in self.relations:
                 # perform full serialization of M2M
                 serializer = Serializer()
