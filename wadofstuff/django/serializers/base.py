@@ -40,6 +40,7 @@ class Serializer(base.Serializer):
         self.extras = options.pop("extras", [])
         self.use_natural_keys = options.pop("use_natural_keys", False)
 
+        already_processed = []
         self.start_serialization()
         for obj in queryset:
             self.start_object(obj)
@@ -48,6 +49,7 @@ class Serializer(base.Serializer):
             concrete_class = obj._meta.proxy_for_model or obj.__class__
             for field in concrete_class._meta.local_fields:
                 attname = field.attname
+                already_processed.append(attname)
                 if field.serialize:
                     if field.rel is None:
                         if attname not in self.excludes:
@@ -58,11 +60,14 @@ class Serializer(base.Serializer):
                             if not self.fields or attname[:-3] in self.fields:
                                 self.handle_fk_field(obj, field)
             for field in concrete_class._meta.many_to_many:
+                already_processed.append(field.attname)
                 if field.serialize:
                     if field.attname not in self.excludes:
                         if not self.fields or field.attname in self.fields:
                             self.handle_m2m_field(obj, field)
             for fname in self.relations:
+                if fname in already_processed:
+                    continue
                 try:
                     field = getattr(obj, fname)
                 except:
