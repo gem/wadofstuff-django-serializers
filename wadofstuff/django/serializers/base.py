@@ -75,6 +75,9 @@ class Serializer(base.Serializer):
                     field = getattr(obj, fname)
                 except:
                     continue
+                # optional back-referenced models appear as None field
+                if field is None:
+                    continue
                 field._priv_name = fname
                 if (field.__module__ + '.' + field.__class__.__name__
                     == "django.db.models.fields.related.RelatedManager"):
